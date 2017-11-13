@@ -22,8 +22,8 @@ CardList.prototype = {
 		this.deck.empty();
 		this.deck.append(this.cards);
 	},
-	open: function (i) {
-		$(this.cards[i]).toggleClass('open show');
+	toggleOpen: function (card) {
+		$(card).toggleClass('open show');
 	},
 	match: function () {
 		let openedList = $('.open');
@@ -31,17 +31,17 @@ CardList.prototype = {
 			if ($(openedList[0]).children().attr('class') == $(openedList[1]).children().attr('class'))
 			{
 				openedList.addClass('match');
-				openedList.removeClass('open show');
+				this.toggleOpen(openedList);
 			}
 		} else if (openedList.length > 2) {
-			openedList.removeClass('open show');
+			this.toggleOpen(openedList);
 		}
 	},
 	displayCard: function (i) {
 		for (let i = 0; i < this.cards.length; i++) {
 			$(this.cards[i]).on('click', (e) => {
 				e.preventDefault();
-				this.open(i);
+				this.toggleOpen($(this.cards[i]));
 				this.match();
 			});
 		}
