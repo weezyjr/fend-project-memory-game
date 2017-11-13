@@ -97,5 +97,5 @@ CardList.prototype = {
 			});
 		}
 	}
-}
+};
 var myDeck = new CardList;
