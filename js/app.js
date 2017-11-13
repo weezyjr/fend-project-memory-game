@@ -23,10 +23,22 @@ CardList.prototype = {
 		this.deck.append(this.cards);
 	},
 	open: function (i) {
-		$(this.cards[i]).toggleClass('open');
+		$(this.cards[i]).toggleClass('open show');
 	},
 	show: function (i) {
 		$(this.cards[i]).toggleClass('show');
+	},
+	match: function () {
+		let openedList = $('.open');
+		if (openedList.length == 2) {
+			if ($(openedList[0]).children().attr('class') == $(openedList[1]).children().attr('class'))
+			{
+				openedList.addClass('match');
+				openedList.removeClass('open show');
+			}
+		} else if (openedList.length > 2) {
+			openedList.removeClass('open show');
+		}
 	},
 	displayCard: function (i) {
 		for (let i = 0; i < this.cards.length; i++) {
@@ -34,6 +46,7 @@ CardList.prototype = {
 				e.preventDefault();
 				this.open(i);
 				this.show(i);
+				this.match();
 			});
 		}
 	}
