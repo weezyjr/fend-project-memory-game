@@ -25,9 +25,6 @@ CardList.prototype = {
 	open: function (i) {
 		$(this.cards[i]).toggleClass('open show');
 	},
-	show: function (i) {
-		$(this.cards[i]).toggleClass('show');
-	},
 	match: function () {
 		let openedList = $('.open');
 		if (openedList.length == 2) {
@@ -45,7 +42,6 @@ CardList.prototype = {
 			$(this.cards[i]).on('click', (e) => {
 				e.preventDefault();
 				this.open(i);
-				this.show(i);
 				this.match();
 			});
 		}
