@@ -10,6 +10,7 @@ CardList.prototype = {
 	restart: function () {
 		this.shuffle();
 		this.closeAll();
+		this.moves = 0;
 		$('.moves').text(0);
 
 		//reset stars
