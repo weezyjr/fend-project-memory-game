@@ -57,6 +57,7 @@ CardList.prototype = {
 	starRate: function () {
 		//find the last filled star
 		let star = $('.stars').find('.fa-star').last();
+
 		//stop this function when all stars are empty
 		if (!star.length)
 			return;
@@ -65,18 +66,43 @@ CardList.prototype = {
 			//replace the filled star with empty star
 			star.removeClass('fa-star');
 			star.addClass('fa-star-o');
+
 			//to remove a star every 10 counts
 			this.rateFlag += 10;
 		}
 	},
 	isWon: function () {
-		if (this.matched == 8) {
-			this.deck.empty();
-			this.deck.append().html(`<h1> Congratulations you've won in ${this.moves} moves </h1>`);
+		const winFlag = 8;
+		if (this.matched == winFlag) {
+			let winModal = $('#winModal');
+			let modalContent = winModal.find('.modal-content');
+			let content = {
+				stars: $('.stars'),
+				congrats: `<h1> Congratulations </h1>`,
+				moves: `<p> you've won in ${this.moves} moves </p>`,
+				playAgainBtn: `<button id="playAgain"> Play Again! </button>`
+			}
+
+			//show the win modal
+			winModal.css('display', 'block');
+
+			//add content to the modal
+			modalContent.append(content.congrats);
+			modalContent.append(content.moves);
+			modalContent.append(content.stars);
+
+			//Play Again button 
+			modalContent.append(content.playAgainBtn);
+			modalContent.on('click', '#playAgain', () => {
+				winModal.css('display', 'none');
+				this.restart();
+			})
 		}
 	},
 	dismatch: function (cardList) {
+		//class with red bkgd
 		cardList.addClass('wrong');
+		//close the card after 0.5s
 		setTimeout(this.close, 500, cardList);
 	},
 	match: function () {
