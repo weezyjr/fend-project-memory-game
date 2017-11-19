@@ -62,7 +62,7 @@ h1 {
 
 .deck .card {
 	width: 22%;
-	height: 22%;
+	height: 120px;
 	background: #2e3d49;
 	font-size: 0;
 	color: #ffffff;
@@ -120,7 +120,7 @@ h1 {
 }
 
 .score-panel .timer {
-    padding-right: 10px;
+	padding-right: 10px;
 	float: right;
 	display: inline-block;
 }
@@ -194,6 +194,9 @@ h1 {
 	.deck {
 		min-height: 320px;
 		padding: 15px;
+	}
+	.deck .card {
+		height: 60px;
 	}
 	.modal-content {
 		font-size: 13px;
