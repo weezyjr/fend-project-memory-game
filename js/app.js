@@ -3,7 +3,7 @@ function CardList() {
 	this.cards = $('.card');
 	this.moves = 0;
 	this.matched = 0;
-	this.rate = 5;
+	this.rateFlag = 10;
 	this.shuffle();
 }
 CardList.prototype = {
@@ -14,7 +14,7 @@ CardList.prototype = {
 		$('.moves').text(0);
 
 		//reset stars
-		this.rate = 5;
+		this.rateFlag = 10;
 		let star = $('.stars').find('.fa');
 		star.addClass('fa-star');
 		star.removeClass('fa-star-o');
@@ -53,13 +53,20 @@ CardList.prototype = {
 	},
 	count: function () {
 		$('.moves').text(++this.moves);
+	},
+	starRate: function () {
+		//find the last filled star
+		let star = $('.stars').find('.fa-star').last();
+		//stop this function when all stars are empty
+		if (!star.length)
+			return;
 
-		//remove stars every 5 counts
-		let star = $('.stars').find('.fa').last();
-		if (this.moves > this.rate) {
+		if (this.moves > this.rateFlag) {
+			//replace the filled star with empty star
 			star.removeClass('fa-star');
 			star.addClass('fa-star-o');
-			this.rate += 5;
+			//to remove a star every 10 counts
+			this.rateFlag += 10;
 		}
 	},
 	isWon: function () {
@@ -76,6 +83,7 @@ CardList.prototype = {
 		let openedCards = $('.open');
 		if (openedCards.length == 2) {
 			this.count();
+			this.starRate();
 			//check if both have the same hidden symbol
 			if ($(openedCards[0]).children().attr('class') == $(openedCards[1]).children().attr('class')) {
 				openedCards.addClass('match');
