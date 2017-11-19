@@ -38,7 +38,6 @@ CardList.prototype = {
 	},
 	open: function (card) {
 		$(card).addClass('open show');
-		this.count();
 	},
 	isOpened(card) {
 		return card.hasClass('open') ? true : false;
@@ -73,6 +72,7 @@ CardList.prototype = {
 	match: function () {
 		let openedCards = $('.open');
 		if (openedCards.length == 2) {
+			this.count();
 			//check if both have the same hidden symbol
 			if ($(openedCards[0]).children().attr('class') == $(openedCards[1]).children().attr('class')) {
 				openedCards.addClass('match');
