@@ -42,6 +42,9 @@ CardList.prototype = {
 	isOpened(card) {
 		return card.hasClass('open') ? true : false;
 	},
+	isMatched(card) {
+		return card.hasClass('match') ? true : false;
+	},
 	close: function (card) {
 		$(card).removeClass('open show wrong');
 	},
@@ -91,7 +94,7 @@ CardList.prototype = {
 			let card = $(this.cards[i]);
 			card.on('click', (e) => {
 				e.preventDefault();
-				if (!this.isOpened(card)) {
+				if (!this.isMatched(card)) {
 					this.open(card);
 					this.match();
 				}
