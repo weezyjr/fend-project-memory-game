@@ -4,22 +4,16 @@ function CardList() {
 	this.moves = 0;
 	this.matched = 0;
 	this.rateFlag = 10;
+	this.clock = {
+		hr: 0,
+		min: 0,
+		sec: 0
+	};
 	this.shuffle();
+	this.timeCounter();
 }
 CardList.prototype = {
-	restart: function () {
-		this.shuffle();
-		this.closeAll();
-		this.moves = 0;
-		$('.moves').text(0);
-
-		//reset stars
-		this.rateFlag = 10;
-		let star = $('.stars').find('.fa');
-		star.addClass('fa-star');
-		star.removeClass('fa-star-o');
-	},
-	shuffle: function () {
+	shuffle() {
 		let randomIndex, tempCard;
 
 		//shuffle cards
@@ -36,8 +30,55 @@ CardList.prototype = {
 		//the event handling function
 		this.play();
 	},
-	open: function (card) {
+	timeCounter() {
+		this.timer = setInterval(() => {
+			this.clock.sec++;
+			if (this.clock.sec == 60) {
+				this.clock.sec = 0;
+				this.clock.min++;
+			}
+			if (this.clock.min == 60) {
+				this.clock.sec = 0;
+				this.clock.min = 0;
+				this.clock.hr++;
+			}
+			$('#sec').text(this.clock.sec);
+			$('#min').text(this.clock.min);
+			$('#hr').text(this.clock.hr);
+
+		}, 1000);
+	},
+	resetClock() {
+		this.clock.sec = 0;
+		this.clock.min = 0;
+		this.clock.hr = 0;
+	},
+	resetMoves() {
+		this.moves = 0;
+		$('.moves').text(0);
+	},
+	restart() {
+		this.closeAll();
+		this.shuffle();
+		clearInterval(this.timer);
+		this.resetClock();
+		this.timeCounter();
+		this.resetMoves();
+
+		//reset stars
+		this.rateFlag = 10;
+		let star = $('.stars').find('.fa');
+		star.addClass('fa-star');
+		star.removeClass('fa-star-o');
+	},
+	open(card) {
 		$(card).addClass('open show');
+	},
+	close(card) {
+		$(card).removeClass('open show wrong');
+	},
+	closeAll() {
+		this.cards.removeClass('open show match');
 	},
 	isOpened(card) {
 		return card.hasClass('open') ? true : false;
@@ -45,16 +86,10 @@ CardList.prototype = {
 	isMatched(card) {
 		return card.hasClass('match') ? true : false;
 	},
-	close: function (card) {
-		$(card).removeClass('open show wrong');
-	},
-	closeAll: function () {
-		this.cards.removeClass('open show match');
-	},
-	count: function () {
+	count() {
 		$('.moves').text(++this.moves);
 	},
-	starRate: function () {
+	starRate() {
 		//find the last filled star
 		let star = $('.stars').find('.fa-star').last();
 
@@ -71,41 +106,45 @@ CardList.prototype = {
 			this.rateFlag += 10;
 		}
 	},
-	isWon: function () {
+	showModal() {
+		let winModal = $('#winModal');
+		let modalContent = winModal.find('.modal-content');
+		let content = {
+			stars: $('.stars'),
+			timer: $('.timer'),
+			congrats: '<h1> Congratulations </h1>',
+			moves: `<p> you've won in ${this.moves} moves </p>`,
+			playAgainBtn: '<button id="playAgain"> Play Again! </button>'
+		};
+
+		//show the win modal
+		winModal.css('display', 'block');
+
+		//add content to the modal
+		modalContent.append(content.congrats);
+		modalContent.append(content.moves);
+
+		//clone the timer and the stars and append them to the modal
+		content.timer.clone().appendTo(modalContent);
+		content.stars.clone().appendTo(modalContent);
+
+		//Play Again button 
+		modalContent.append(content.playAgainBtn);
+		modalContent.on('click', '#playAgain', () => {
+			winModal.css('display', 'none');
+			this.restart();
+		});
+	},
+	isWon() {
 		const winFlag = 8;
 		if (this.matched == winFlag) {
-			let winModal = $('#winModal');
-			let modalContent = winModal.find('.modal-content');
-			let content = {
-				stars: $('.stars'),
-				congrats: `<h1> Congratulations </h1>`,
-				moves: `<p> you've won in ${this.moves} moves </p>`,
-				playAgainBtn: `<button id="playAgain"> Play Again! </button>`
-			}
-
-			//show the win modal
-			winModal.css('display', 'block');
-
-			//add content to the modal
-			modalContent.append(content.congrats);
-			modalContent.append(content.moves);
-			modalContent.append(content.stars);
-
-			//Play Again button 
-			modalContent.append(content.playAgainBtn);
-			modalContent.on('click', '#playAgain', () => {
-				winModal.css('display', 'none');
-				this.restart();
-			})
-		}
+			clearInterval(this.timer);
+			this.showModal();
+			return true;
+		} else
+			return false;
 	},
-	dismatch: function (cardList) {
-		//class with red bkgd
-		cardList.addClass('wrong');
-		//close the card after 0.5s
-		setTimeout(this.close, 500, cardList);
-	},
-	match: function () {
+	match() {
 		let openedCards = $('.open');
 		if (openedCards.length == 2) {
 			this.count();
@@ -123,9 +162,16 @@ CardList.prototype = {
 			}
 		}
 	},
-	play: function () {
+	dismatch(cardList) {
+		//class with red bkgd
+		cardList.addClass('wrong');
+		//close the card after 0.5s
+		setTimeout(this.close, 500, cardList);
+	},
+	play() {
 		for (let i = 0; i < this.cards.length; i++) {
 			let card = $(this.cards[i]);
+			//event handler for opning cards
 			card.on('click', (e) => {
 				e.preventDefault();
 				if (!this.isMatched(card)) {
